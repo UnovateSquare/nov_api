@@ -9,5 +9,32 @@
     "default": 10,
     "max": 50
   },
-  "mongodb": "mongodb+srv://api:hyAXoaPV9NAfGCsy@dev.eml0lqr.mongodb.net"
+  "mongodb": "mongodb+srv://api:hyAXoaPV9NAfGCsy@dev.eml0lqr.mongodb.net",
+  "authentication": {
+    "entity": "user",
+    "service": "users",
+    "secret": "UhoIa6hixjSgrFHMvPA8iE35MNf8QXca",
+    "authStrategies": [
+      "jwt",
+      "local"
+    ],
+    "jwtOptions": {
+      "header": {
+        "typ": "access"
+      },
+      "audience": "https://yourdomain.com",
+      "algorithm": "HS256",
+      "expiresIn": "1d"
+    },
+    "local": {
+      "usernameField": "email",
+      "passwordField": "password"
+    },
+    "oauth": {
+      "google": {
+        "key": "<Client ID>",
+        "secret": "<Client secret>"
+      }
+    }
+  }
 }
