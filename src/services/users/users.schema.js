@@ -9,14 +9,24 @@ export const userSchema = {
   $id: 'User',
   type: 'object',
   additionalProperties: false,
-  required: ['_id', 'email'],
+  required: ['_id', 'email', 'role'],
   properties: {
     _id: ObjectIdSchema(),
     email: { type: 'string' },
     password: { type: 'string' },
-    googleId: { type: 'string' }
+    googleId: { type: 'string' },
+    bio: { type: 'string' },
+    photo: { type: 'string' },
+    role: { type: 'string', enum: ['0', '1', '2', '3', '4', '5', '6'] }
   }
 }
+// 0 Membre   
+// 1 Team USQ
+// 2 Developpeur Certifié 
+// 3 Graphiste Certifié 
+// 4 Icy Premium MermberShip
+// 5 modérateurs certifiés 
+// 6 beta tester
 export const userValidator = getValidator(userSchema, dataValidator)
 export const userResolver = resolve({})
 
@@ -30,14 +40,18 @@ export const userDataSchema = {
   $id: 'UserData',
   type: 'object',
   additionalProperties: false,
-  required: ['email'],
+  required: ['email', 'role'],
   properties: {
     ...userSchema.properties
   }
 }
 export const userDataValidator = getValidator(userDataSchema, dataValidator)
 export const userDataResolver = resolve({
-  password: passwordHash({ strategy: 'local' })
+  password: passwordHash({ strategy: 'local' }),
+  photo: async (value) => {
+    // Hash the photo URL before storing it
+    return await hash(value)
+  }
 })
 
 // Schema for updating existing data
@@ -52,7 +66,11 @@ export const userPatchSchema = {
 }
 export const userPatchValidator = getValidator(userPatchSchema, dataValidator)
 export const userPatchResolver = resolve({
-  password: passwordHash({ strategy: 'local' })
+  password: passwordHash({ strategy: 'local' }),
+  photo: async (value) => {
+    // Hash the photo URL before storing it
+    return await hash(value)
+  }
 })
 
 // Schema for allowed query properties
@@ -73,5 +91,12 @@ export const userQueryResolver = resolve({
     }
 
     return value
+  },
+  role: async (value, user, context) => {
+    if (context.params.user && context.params.user.role === 'admin') {
+      return value
+    }
+
+    return undefined
   }
 })
